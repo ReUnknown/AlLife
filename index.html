@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AILife - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <aside>
+        <div class="logo"><i class="ph-fill ph-dna"></i> AILife</div>
+        <div class="nav-links">
+            <div class="nav-link active" data-tab="all"><i class="ph ph-globe"></i> All Lives</div>
+            <div class="nav-link" data-tab="alive"><i class="ph ph-heartbeat"></i> Alive</div>
+            <div class="nav-link" data-tab="deceased"><i class="ph ph-skull"></i> Deceased</div>
+        </div>
+        <div style="margin-top: auto;">
+            <div class="nav-link" id="settingsBtn"><i class="ph ph-gear"></i> Settings</div>
+        </div>
+    </aside>
+
+    <main>
+        <header>
+            <div>
+                <h1>Your Simulations</h1>
+                <p id="statsSubtitle" style="color: var(--text-dim); margin-top: 5px;">0 simulations • 0 alive</p>
+            </div>
+            <button class="btn-new" id="newLifeBtn"><i class="ph ph-plus"></i> New Life</button>
+        </header>
+
+        <div id="emptyState" class="empty-state">
+            <i class="ph ph-ghost empty-icon"></i>
+            <h2>No lives found</h2>
+            <p>Click "New Life" to create your first simulation.</p>
+        </div>
+
+        <div id="livesGrid" class="grid"></div>
+    </main>
+
+    <div id="apiKeyModal" class="modal-overlay api-key-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Welcome to AILife</h2>
+            </div>
+            <div class="modal-body" id="welcomeStep1">
+                <p style="color: var(--text-dim); font-size: 0.9rem; margin-top: 0; line-height: 1.5;">
+                    To run simulations, you must connect an OpenRouter API key. This key is saved locally in your browser and is never sent to us.
+                </p>
+                <div class="form-group" style="margin-top: 16px;">
+                    <label style="font-size: 0.85rem; color: var(--text-dim);">OpenRouter API Key</label>
+                    <input type="password" id="welcomeApiKey" class="input-box" style="width: 100%; margin-top: 4px;" placeholder="sk-or-v1-...">
+                </div>
+                <div class="form-group" style="margin-top: 16px;">
+                    <label style="font-size: 0.85rem; color: var(--text-dim);">AI Model</label>
+                    <select id="welcomeModel" class="select-input" style="margin-top: 4px;">
+                        <option value="openai/gpt-oss-120b" selected>GPT OSS 120B (Paid)</option>
+                        <option value="anthropic/claude-haiku-4.5">Claude Haiku 4.5</option>
+                        <option value="meta-llama/llama-4-scout">Llama 4 Scout</option>
+                        <option value="x-ai/grok-4.1-fast">Grok 4.1 Fast</option>
+                        <option value="moonshotai/kimi-k2.5">Kimi k2.5</option>
+                    </select>
+                </div>
+                <div id="welcomeApiStatus" class="api-status"></div>
+                <button class="btn-new" id="welcomeVerifyBtn" style="width: 100%; justify-content: center; margin-top: 16px;">Verify Connection</button>
+            </div>
+            <div class="modal-body" id="welcomeStep2" style="display: none;">
+                <p style="color: var(--text-dim); font-size: 0.9rem; margin-top: 0;">Connection Verified! Let's ensure the AI streams correctly.</p>
+                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                    <input type="text" id="welcomeTestInput" class="input-box" placeholder="Ask something (e.g., 'Say hello')">
+                    <button class="btn-secondary" id="welcomeTestBtn">Test Stream</button>
+                </div>
+                <div id="welcomeTestOutput" style="margin-top: 16px; background: #0b0d0e; border: 1px solid var(--border); border-radius: 8px; padding: 16px; min-height: 80px; font-size: 0.85rem; color: #e8eaed; max-height: 150px; overflow-y: auto;">Awaiting prompt...</div>
+                <div id="welcomeFinalActions" style="display: none; gap: 12px; margin-top: 20px;">
+                    <button class="btn-new" id="worksBtn" style="flex: 1; background: var(--success); justify-content: center;"><i class="ph ph-check-circle"></i> Works!</button>
+                    <button class="btn-secondary" id="doesntWorkBtn" style="flex: 1; justify-content: center; color: #f28b82;"><i class="ph ph-x-circle"></i> Doesn't Work</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Simulation Settings</h2>
+                <button class="icon-btn" id="closeSettingsBtn"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                
+                <div class="form-group">
+                    <div class="label-row"><label>Years per Advance</label></div>
+                    <div class="slider-container"><input type="range" id="yearsPerTurn" min="1" max="12" value="1" class="slider"><span id="yearsVal" class="slider-val">1 Year</span></div>
+                </div>
+                <div class="form-group">
+                    <div class="label-row"><label>Event Volatility</label></div>
+                    <div class="slider-container"><input type="range" id="eventVolatility" min="1" max="5" value="3" class="slider"><span id="volatilityVal" class="slider-val" style="width: 80px; text-align: right;">Classic</span></div>
+                </div>
+                <div class="form-group">
+                    <div class="label-row"><label>Narrative Detail</label></div>
+                    <select id="narrativeLength" class="select-input"></select>
+                    <p id="narrativeHelpText" class="help-text"></p>
+                </div>
+
+                <hr style="border: none; border-top: 1px solid var(--border); margin: 32px 0;">
+
+                <div class="form-group">
+                    <div class="label-row"><label>AI Model</label></div>
+                    <select id="settingsModel" class="select-input">
+                        <option value="openai/gpt-oss-120b">GPT OSS 120B (Paid)</option>
+                        <option value="anthropic/claude-haiku-4.5">Claude Haiku 4.5</option>
+                        <option value="meta-llama/llama-4-scout">Llama 4 Scout</option>
+                        <option value="x-ai/grok-4.1-fast">Grok 4.1 Fast</option>
+                        <option value="moonshotai/kimi-k2.5">Kimi k2.5</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div class="label-row"><label>OpenRouter API Key</label></div>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="password" id="settingsApiKey" class="input-box" placeholder="sk-or-v1-...">
+                        <button class="btn-secondary" id="testApiKeyBtn">Test</button>
+                    </div>
+                    <div id="settingsApiStatus" class="api-status"></div>
+                </div>
+
+                <div class="data-actions">
+                    <button class="btn-secondary" id="exportDataBtn" style="flex: 1;"><i class="ph ph-download-simple"></i> Export</button>
+                    <button class="btn-secondary" id="importDataBtn" style="flex: 1;"><i class="ph ph-upload-simple"></i> Import</button>
+                    <input type="file" id="importFile" accept=".json" style="display: none;">
+                </div>
+                <div class="data-actions" style="margin-top: 12px; padding-top: 0; border: none;">
+                    <button class="btn-secondary" id="wipeDataBtn" style="flex: 1; background: rgba(234, 67, 53, 0.1); color: var(--danger); border: 1px solid rgba(234, 67, 53, 0.3);"><i class="ph ph-warning-circle"></i> Wipe All Data</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" id="cancelSettingsBtn">Close</button>
+                <button class="btn-new" id="saveSettingsBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

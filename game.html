@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AILife - Simulation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="gamescript.js" defer></script>
+</head>
+<body class="game-layout">
+
+    <aside class="sidebar">
+        <div class="identity-header">
+            <div class="avatar-box" id="charAvatar">☁️</div>
+            <h2 id="charName">Unknown Spirit</h2>
+        </div>
+
+        <span class="section-label">Identity & Physical</span>
+        <div class="info-grid">
+            <div class="info-item"><b>Gender</b><span id="ui-gender">--</span></div>
+            <div class="info-item"><b>Age</b><span id="ui-age">--</span></div>
+            <div class="info-item"><b>Skin</b><span id="ui-skin">--</span></div>
+            <div class="info-item"><b>Eyes</b><span id="ui-eyes">--</span></div>
+            <div class="info-item"><b>Height</b><span id="ui-height">--</span></div>
+            <div class="info-item"><b>Weight</b><span id="ui-weight">--</span></div>
+            <div class="info-item"><b>Location</b><span id="ui-location">--</span></div>
+            <div class="info-item"><b>Race</b><span id="ui-race">--</span></div>
+            <div class="info-item full-row"><b>Disabilities</b><span id="ui-disabilities">--</span></div>
+        </div>
+
+        <span class="section-label">Vital Indicators</span>
+        <div id="dynamic-stats"><p class="empty-sidebar-text">Awaiting Roll...</p></div>
+
+        <span class="section-label">Memory Log</span>
+        <div id="events"><p class="empty-sidebar-text">No memories yet.</p></div>
+
+        <span class="section-label">Core Traits</span>
+        <div id="traits" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;"><p class="empty-sidebar-text">No traits established.</p></div>
+
+        <span class="section-label">Miscellaneous</span>
+        <div id="misc"><p class="empty-sidebar-text">Nothing to show.</p></div>
+    </aside>
+
+    <div class="stage" style="position: relative;">
+        <header class="top-bar">
+            <div style="font-size: 0.85rem; color: var(--text-dim);" id="topBarTitle">Simulation / Awaiting Genesis</div>
+            <div style="opacity: 0.5; cursor: pointer;" onclick="window.location.href='index.html'"><i class="ph ph-house"></i> Home</div>
+        </header>
+
+        <div id="aiLoader" class="loading-overlay">
+            <div class="spinner"></div>
+            <div class="loading-text" id="loaderText">Simulating...</div>
+        </div>
+
+        <div class="history-pane" id="historyPane">
+            <div class="genesis-state" id="genesisState">
+                <i class="ph-duotone ph-sparkle genesis-icon"></i>
+                <h2>Awaiting Genesis</h2>
+                <p>Use the console below to set starting conditions, or leave it blank and let the AI decide their fate. Click <strong>Roll</strong> to begin.</p>
+            </div>
+            <div id="storyContainer"></div>
+        </div>
+
+        <footer class="console">
+            <button id="rollBtn" class="btn-console primary"><i class="ph ph-dice-three" id="diceIcon"></i> Roll</button>
+            <input type="text" id="actionInput" class="input-box" placeholder="Optional: Set starting conditions...">
+            <button id="nextAgeBtn" class="btn-console secondary" style="display: none;">Next Age <i class="ph ph-arrow-right"></i></button>
+        </footer>
+    </div>
+
+</body>
+</html>
